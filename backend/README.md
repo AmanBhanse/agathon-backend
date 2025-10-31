@@ -354,3 +354,4 @@ This project is part of the Agathon Tumorboard application.
 ---
 
 **Need help?** Check the interactive documentation at `http://localhost:8000/docs` when the server is running.
+│   ├── __init__.py

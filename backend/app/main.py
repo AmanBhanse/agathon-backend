@@ -19,17 +19,21 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
+
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the Agathon Tumorboard API!"}
+
 
 @app.get("/hello")
 def hello_world():
     return {"message": "Hello World from FastAPI!"}
 
+
 @app.get("/hello/{name}")
 def hello_name(name: str):
     return {"message": f"Hello {name}!"}
+
 
 @app.get("/copilot")
 def hello_copilot():
