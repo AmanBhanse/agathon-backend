@@ -110,7 +110,7 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('therapySoFar')}
               >
-                <span className="accordion-title">Therapy So Far</span>
+                <span className="accordion-title">Therapy So Far/ Bisher Therapie</span>
                 <span className="accordion-icon">
                   {expandedSections.therapySoFar ? '▼' : '▶'}
                 </span>
@@ -130,7 +130,7 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('tumorDiagnosis')}
               >
-                <span className="accordion-title">Tumor Diagnosis</span>
+                <span className="accordion-title">Tumor Diagnosis/ Tumordiagnose</span>
                 <span className="accordion-icon">
                   {expandedSections.tumorDiagnosis ? '▼' : '▶'}
                 </span>
@@ -150,7 +150,7 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('histoCyto')}
               >
-                <span className="accordion-title">Histo Cyto</span>
+                <span className="accordion-title">Histo Cyto/ Histo Zyto</span>
                 <span className="accordion-icon">
                   {expandedSections.histoCyto ? '▼' : '▶'}
                 </span>
@@ -170,7 +170,7 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('tumorHistory')}
               >
-                <span className="accordion-title">Tumor History</span>
+                <span className="accordion-title">Tumor History/ Tumoranamnese</span>
                 <span className="accordion-icon">
                   {expandedSections.tumorHistory ? '▼' : '▶'}
                 </span>
