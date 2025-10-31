@@ -30,7 +30,7 @@ export default function Header() {
     <header className="header">
       <div className="header-left">
         <img src={logo} alt="AGAPLESION Logo" className="header-logo" />
-        <span className="header-title">MedTech Team Portal</span>
+        <span className="header-title"></span>
       </div>
 
       {/* Avatar with dropdown - only show when logged in */}
