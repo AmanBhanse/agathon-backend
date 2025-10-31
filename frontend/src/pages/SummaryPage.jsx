@@ -9,6 +9,7 @@ export default function SummaryPage() {
   
   // State for accordion expansion
   const [expandedSections, setExpandedSections] = useState({
+    therapySoFar: false,
     tumorDiagnosis: false,
     histoCyto: false,
     tumorHistory: false,
@@ -55,11 +56,27 @@ export default function SummaryPage() {
           <p className="card-value">{userName || '-'}</p>
         </div>
 
-        {/* Status Card */}
-        <div className="summary-card card-status">
-          <p className="card-label">Status</p>
-          <p className="card-value">{loading ? 'Loading...' : 'Active'}</p>
-        </div>
+        
+
+        {/* Treatment Approach Card */}
+        {apiData && apiData.data && !loading && (
+          <div className="summary-card card-treatment">
+            <p className="card-label">Treatment Approach</p>
+            <p className="card-value" style={{ color: apiData.data.curative === 1 ? '#2e7d32' : '#c62828' }}>
+              {apiData.data.curative === 1 ? '🎯 Curative' : '🤝 Palliative'}
+            </p>
+          </div>
+        )}
+
+        {/* Palliative Connection Card */}
+        {apiData && apiData.data && !loading && apiData.data.palliative === 1 && (
+          <div className="summary-card card-palliative">
+            <p className="card-label">Palliative Care</p>
+            <p className="card-value" style={{ color: apiData.data['pall connection'] === 1 ? '#2e7d32' : '#f57c00' }}>
+              {apiData.data['pall connection'] === 1 ? '✓ Connected' : '⚠️ Not Connected'}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Details Section */}
@@ -87,6 +104,26 @@ export default function SummaryPage() {
         {/* API Data Display */}
         {apiData && apiData.data && !loading && (
           <>
+            {/* Therapy So Far Accordion */}
+            <div className="accordion-item">
+              <button
+                className="accordion-header"
+                onClick={() => toggleSection('therapySoFar')}
+              >
+                <span className="accordion-title">Therapy So Far</span>
+                <span className="accordion-icon">
+                  {expandedSections.therapySoFar ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedSections.therapySoFar && (
+                <div className="accordion-content">
+                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#555' }}>
+                    {cleanText(apiData.data['therapy so far'])}
+                  </p>
+                </div>
+              )}
+            </div>
+
             {/* Tumor Diagnosis Accordion */}
             <div className="accordion-item">
               <button
