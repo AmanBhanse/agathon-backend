@@ -44,7 +44,7 @@ export default function Header() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <img src={logo} alt="AGAPLESION Logo" style={{ height: '3rem', marginRight: '1rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
-        MedTech Team Portal
+        
       </div>
 
       {/* Avatar with dropdown - only show when logged in */}

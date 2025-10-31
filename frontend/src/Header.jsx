@@ -41,7 +41,7 @@ export default function Header() {
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🏥</span>
-        MedTech Team Portal
+        
       </div>
 
       {/* Avatar with dropdown - only show when logged in */}
