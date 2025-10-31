@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useCaseStore } from '../store';
 import { useFallnummerData } from '../hooks/useFallnummerData';
 import './SummaryPage.css';
@@ -6,8 +7,23 @@ export default function SummaryPage() {
   const caseNumber = useCaseStore((state) => state.caseNumber);
   const userName = useCaseStore((state) => state.userName);
   
+  // State for accordion expansion
+  const [expandedSections, setExpandedSections] = useState({
+    tumorDiagnosis: false,
+    histoCyto: false,
+    tumorHistory: false,
+  });
+  
   // Fetch fallnummer data from API
   const { data: apiData, loading, error } = useFallnummerData(caseNumber);
+
+  // Toggle section expansion
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
 
   // Extract clean text by removing formatting escape sequences
   const cleanText = (text) => {
@@ -71,36 +87,64 @@ export default function SummaryPage() {
         {/* API Data Display */}
         {apiData && apiData.data && !loading && (
           <>
-            {/* Procedure */}
-            <div className="detail-item">
-              <h4 className="detail-title">Procedure</h4>
-              <p className="detail-value" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                {cleanText(apiData.data.Procedure)}
-              </p>
+            {/* Tumor Diagnosis Accordion */}
+            <div className="accordion-item">
+              <button
+                className="accordion-header"
+                onClick={() => toggleSection('tumorDiagnosis')}
+              >
+                <span className="accordion-title">Tumor Diagnosis</span>
+                <span className="accordion-icon">
+                  {expandedSections.tumorDiagnosis ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedSections.tumorDiagnosis && (
+                <div className="accordion-content">
+                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#555' }}>
+                    {cleanText(apiData.data['Tumor diagnosis'])}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Tumor Diagnosis */}
-            <div className="detail-item">
-              <h4 className="detail-title">Tumor Diagnosis</h4>
-              <p className="detail-value" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                {cleanText(apiData.data['Tumor diagnosis'])}
-              </p>
+            {/* Histo Cyto Accordion */}
+            <div className="accordion-item">
+              <button
+                className="accordion-header"
+                onClick={() => toggleSection('histoCyto')}
+              >
+                <span className="accordion-title">Histo Cyto</span>
+                <span className="accordion-icon">
+                  {expandedSections.histoCyto ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedSections.histoCyto && (
+                <div className="accordion-content">
+                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#555' }}>
+                    {cleanText(apiData.data['Histo Cyto'])}
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Histo Cyto */}
-            <div className="detail-item">
-              <h4 className="detail-title">Histo Cyto</h4>
-              <p className="detail-value" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                {cleanText(apiData.data['Histo Cyto'])}
-              </p>
-            </div>
-
-            {/* Tumor History */}
-            <div className="detail-item">
-              <h4 className="detail-title">Tumor History</h4>
-              <p className="detail-value" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
-                {cleanText(apiData.data['Tumor history'])}
-              </p>
+            {/* Tumor History Accordion */}
+            <div className="accordion-item">
+              <button
+                className="accordion-header"
+                onClick={() => toggleSection('tumorHistory')}
+              >
+                <span className="accordion-title">Tumor History</span>
+                <span className="accordion-icon">
+                  {expandedSections.tumorHistory ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedSections.tumorHistory && (
+                <div className="accordion-content">
+                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#555' }}>
+                    {cleanText(apiData.data['Tumor history'])}
+                  </p>
+                </div>
+              )}
             </div>
           </>
         )}
