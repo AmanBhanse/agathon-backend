@@ -1,32 +1,18 @@
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { useCaseStore } from './store';
+import './Layout.css';
 
 export default function Layout({ children }) {
   const currentPage = useCaseStore((state) => state.currentPage);
   const setCurrentPage = useCaseStore((state) => state.setCurrentPage);
 
   return (
-    <div style={{ 
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #e3f2fd 0%, #f5f5f5 100%)',
-    }}>
+    <div className="layout-container">
       <Header />
-      <div style={{
-        display: 'flex',
-        flex: 1,
-      }}>
+      <div className="layout-content-wrapper">
         <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
-        <main style={{ 
-          flex: 1,
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'flex-start',
-          padding: '2rem',
-          overflow: 'auto',
-        }}>
+        <main className="layout-main">
           {children}
         </main>
       </div>
