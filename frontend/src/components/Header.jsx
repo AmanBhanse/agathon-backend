@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCaseStore } from '../store';
+import logo from '../assets/AGAPLESION_logo.svg';
 
 export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -42,7 +43,7 @@ export default function Header() {
       justifyContent: 'space-between',
     }}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>🏥</span>
+        <img src={logo} alt="AGAPLESION Logo" style={{ height: '3rem', marginRight: '1rem', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }} />
         MedTech Team Portal
       </div>
 
