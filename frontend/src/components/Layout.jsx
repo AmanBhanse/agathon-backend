@@ -1,11 +1,7 @@
 import Header from './Header';
 import Sidebar from './Sidebar';
-import { useCaseStore } from './store';
 
 export default function Layout({ children }) {
-  const currentPage = useCaseStore((state) => state.currentPage);
-  const setCurrentPage = useCaseStore((state) => state.setCurrentPage);
-
   return (
     <div style={{ 
       display: 'flex',
@@ -18,7 +14,7 @@ export default function Layout({ children }) {
         display: 'flex',
         flex: 1,
       }}>
-        <Sidebar currentPage={currentPage} onPageChange={setCurrentPage} />
+        <Sidebar />
         <main style={{ 
           flex: 1,
           display: 'flex', 

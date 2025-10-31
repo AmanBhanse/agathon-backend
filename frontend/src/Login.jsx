@@ -2,17 +2,30 @@ import { useState } from 'react';
 import { useCaseStore } from './store';
 
 export default function Login({ onLogin }) {
-  const [input, setInput] = useState('');
+  const [caseNumber, setCaseNumber] = useState('');
+  const [userName, setUserName] = useState('');
   const [error, setError] = useState('');
+  const [step, setStep] = useState('case'); // 'case' or 'name'
 
-  const handleSubmit = (e) => {
+  const handleCaseSubmit = (e) => {
     e.preventDefault();
     setError('');
-    if (!input.trim()) {
+    if (!caseNumber.trim()) {
       setError('Please enter a case number');
       return;
     }
-    useCaseStore.getState().setCaseNumber(input.trim());
+    useCaseStore.getState().setCaseNumber(caseNumber.trim());
+    setStep('name');
+  };
+
+  const handleNameSubmit = (e) => {
+    e.preventDefault();
+    setError('');
+    if (!userName.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+    useCaseStore.getState().setUserName(userName.trim());
     onLogin();
   };
 
@@ -55,64 +68,151 @@ export default function Login({ onLogin }) {
         color: '#757575',
         marginBottom: '2rem',
         fontSize: '0.95rem',
-      }}>Enter your case number to access</p>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
-        <div>
-          <label style={{
-            display: 'block',
-            marginBottom: '0.5rem',
-            color: '#212121',
-            fontWeight: 600,
-            fontSize: '0.9rem',
-          }}>Case Number</label>
-          <input
-            type="text"
-            placeholder="e.g., CASE-2024-001"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
+      }}>{step === 'case' ? 'Enter your case number to access' : 'Enter your name to proceed'}</p>
+      
+      {step === 'case' ? (
+        <form onSubmit={handleCaseSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+          <div>
+            <label style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              color: '#212121',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+            }}>Case Number</label>
+            <input
+              type="text"
+              placeholder="e.g., CASE-2024-001"
+              value={caseNumber}
+              onChange={(e) => setCaseNumber(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.875rem 1rem',
+                fontSize: '1rem',
+                borderRadius: '8px',
+                border: error ? '2px solid #f44336' : '1px solid #e0e0e0',
+                outline: 'none',
+                background: '#fafafa',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit',
+              }}
+            />
+            {error && <p style={{ color: '#f44336', fontSize: '0.85rem', marginTop: '0.5rem' }}>{error}</p>}
+          </div>
+          <button
+            type="submit"
             style={{
-              width: '100%',
-              padding: '0.875rem 1rem',
-              fontSize: '1rem',
+              padding: '0.875rem 1.5rem',
+              fontSize: '1.05rem',
               borderRadius: '8px',
-              border: error ? '2px solid #f44336' : '1px solid #e0e0e0',
-              outline: 'none',
-              background: '#fafafa',
-              transition: 'all 0.2s ease',
-              fontFamily: 'inherit',
+              border: 'none',
+              background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
+              color: 'white',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
+              letterSpacing: '0.5px',
+              transition: 'all 0.3s ease',
             }}
-          />
-          {error && <p style={{ color: '#f44336', fontSize: '0.85rem', marginTop: '0.5rem' }}>{error}</p>}
-        </div>
-        <button
-          type="submit"
-          style={{
-            padding: '0.875rem 1.5rem',
-            fontSize: '1.05rem',
-            borderRadius: '8px',
-            border: 'none',
-            background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
-            color: 'white',
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
-            letterSpacing: '0.5px',
-            transition: 'all 0.3s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = 'linear-gradient(90deg, #0d47a1 0%, #1976d2 100%)';
-            e.target.style.boxShadow = '0 8px 24px rgba(25, 118, 210, 0.3)';
-            e.target.style.transform = 'translateY(-2px)';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)';
-            e.target.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.2)';
-            e.target.style.transform = 'translateY(0)';
-          }}
-        >
-          Login
-        </button>
-      </form>
+            onMouseEnter={(e) => {
+              e.target.style.background = 'linear-gradient(90deg, #0d47a1 0%, #1976d2 100%)';
+              e.target.style.boxShadow = '0 8px 24px rgba(25, 118, 210, 0.3)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)';
+              e.target.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.2)';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            Next
+          </button>
+        </form>
+      ) : (
+        <form onSubmit={handleNameSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+          <div>
+            <label style={{
+              display: 'block',
+              marginBottom: '0.5rem',
+              color: '#212121',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+            }}>Your Name</label>
+            <input
+              type="text"
+              placeholder="e.g., John Doe"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.875rem 1rem',
+                fontSize: '1rem',
+                borderRadius: '8px',
+                border: error ? '2px solid #f44336' : '1px solid #e0e0e0',
+                outline: 'none',
+                background: '#fafafa',
+                transition: 'all 0.2s ease',
+                fontFamily: 'inherit',
+              }}
+            />
+            {error && <p style={{ color: '#f44336', fontSize: '0.85rem', marginTop: '0.5rem' }}>{error}</p>}
+          </div>
+          <button
+            type="submit"
+            style={{
+              padding: '0.875rem 1.5rem',
+              fontSize: '1.05rem',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
+              color: 'white',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 4px 12px rgba(25, 118, 210, 0.2)',
+              letterSpacing: '0.5px',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'linear-gradient(90deg, #0d47a1 0%, #1976d2 100%)';
+              e.target.style.boxShadow = '0 8px 24px rgba(25, 118, 210, 0.3)';
+              e.target.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)';
+              e.target.style.boxShadow = '0 4px 12px rgba(25, 118, 210, 0.2)';
+              e.target.style.transform = 'translateY(0)';
+            }}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setStep('case');
+              setError('');
+            }}
+            style={{
+              padding: '0.875rem 1.5rem',
+              fontSize: '0.95rem',
+              borderRadius: '8px',
+              border: '1px solid #1976d2',
+              background: 'transparent',
+              color: '#1976d2',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = '#e3f2fd';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+            }}
+          >
+            Back
+          </button>
+        </form>
+      )}
     </div>
   );
 }
