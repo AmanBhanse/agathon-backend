@@ -38,7 +38,7 @@ export default function Summary() {
         fontWeight: 700,
         fontSize: '2rem',
         letterSpacing: '0.5px',
-      }}>Case Summary</h2>
+      }}>Current Reports</h2>
       
       <div style={{
         width: '100%',
