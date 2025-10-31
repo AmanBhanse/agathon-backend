@@ -41,7 +41,7 @@ export default function SummaryPage() {
       <div className="summary-icon-box">
         📊
       </div>
-      <h2 className="summary-title">Case Summary</h2>
+      <h2 className="summary-title">Current Reports</h2>
       
       <div className="summary-cards-grid">
         {/* Case Number Card */}
