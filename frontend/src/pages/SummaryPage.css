@@ -62,6 +62,16 @@
   border-color: #81c784;
 }
 
+.card-treatment {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  border-color: #ffb74d;
+}
+
+.card-palliative {
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+  border-color: #f48fb1;
+}
+
 .card-label {
   color: #757575;
   font-size: 0.9rem;
