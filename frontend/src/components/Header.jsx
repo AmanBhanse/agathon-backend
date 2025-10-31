@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useCaseStore } from './store';
+import { useNavigate } from 'react-router-dom';
+import { useCaseStore } from '../store';
 
 export default function Header() {
   const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
   const userName = useCaseStore((state) => state.userName);
   const logout = useCaseStore((state) => state.logout);
 
   const handleLogout = () => {
     logout();
     setShowDropdown(false);
-    window.location.reload();
+    navigate('/login');
   };
 
   // Generate avatar initials
@@ -63,9 +65,6 @@ export default function Header() {
               alignItems: 'center',
               justifyContent: 'center',
               transition: 'all 0.3s ease',
-              hover: {
-                background: 'rgba(255, 255, 255, 0.35)',
-              },
             }}
             onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.35)'}
             onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.25)'}
