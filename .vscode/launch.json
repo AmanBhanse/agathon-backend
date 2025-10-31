@@ -1,0 +1,39 @@
+//Original
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: FastAPI (uvicorn)",
+      "type": "python",
+      "request": "launch",
+      "program": "-m",
+      "args": ["uvicorn", "app.main:app", "--reload"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend",
+        "VIRTUAL_ENV": "${workspaceFolder}/backend/.venv",
+        "PATH": "${workspaceFolder}/backend/.venv/bin:${env:PATH}"
+      },
+      "subProcess": false,
+      "justMyCode": true
+    },
+    {
+      "name": "Python: FastAPI (uvicorn) - no-reload (debug)",
+      "type": "python",
+      "request": "launch",
+      "program": "-m",
+      "args": ["uvicorn", "app.main:app"],
+      "cwd": "${workspaceFolder}/backend",
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend",
+        "VIRTUAL_ENV": "${workspaceFolder}/backend/.venv",
+        "PATH": "${workspaceFolder}/backend/.venv/bin:${env:PATH}"
+      },
+      "subProcess": true,
+      "justMyCode": true
+    }
+  ]
+}

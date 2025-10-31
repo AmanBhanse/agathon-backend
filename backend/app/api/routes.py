@@ -11,8 +11,8 @@ async def get_fallnummer_data(fallnummer: str):
     Get all data for a specific Fallnummer from the Excel file
     """
     try:
-        data = excel_service.get_data_by_fallnummer(fallnummer)
         
+        data = excel_service.get_data_by_fallnummer(fallnummer)
         if data is None:
             raise HTTPException(
                 status_code=404, 
