@@ -15,6 +15,7 @@ import {
   Target,
   Heart,
 } from 'lucide-react';
+import PalliativeGuidelineDialog from '../components/PalliativeGuidelineDialog';
 import './SummaryPage.css';
 
 export default function SummaryPage() {
@@ -29,6 +30,9 @@ export default function SummaryPage() {
     tumorHistory: false,
     secondaryDiagnoses: false,
   });
+  
+  // State for palliative guideline dialog
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   // Fetch fallnummer data from API
   const { data: apiData, loading, error } = useFallnummerData(caseNumber);
@@ -152,7 +156,30 @@ export default function SummaryPage() {
 
         {/* Palliative Connection Card */}
         {apiData && apiData.data && !loading && apiData.data.palliative === 1 && (
-          <div className="summary-card card-palliative">
+          <div 
+            className="summary-card card-palliative"
+            style={{
+              cursor: apiData.data['pall connection'] === 0 ? 'pointer' : 'default',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onClick={() => {
+              if (apiData.data['pall connection'] === 0) {
+                setIsDialogOpen(true);
+              }
+            }}
+            onMouseEnter={(e) => {
+              if (apiData.data['pall connection'] === 0) {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.2)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (apiData.data['pall connection'] === 0) {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '';
+              }
+            }}
+          >
             <p className="card-label">Palliative Care</p>
             <p className="card-value" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: apiData.data['pall connection'] === 1 ? '#2e7d32' : '#f57c00' }}>
               {apiData.data['pall connection'] === 1 ? (
@@ -347,6 +374,13 @@ export default function SummaryPage() {
           </p>
         )}
       </div>
+
+      {/* Palliative Guideline Dialog */}
+      <PalliativeGuidelineDialog 
+        isOpen={isDialogOpen} 
+        onClose={() => setIsDialogOpen(false)} 
+      />
     </div>
   );
 }
+
