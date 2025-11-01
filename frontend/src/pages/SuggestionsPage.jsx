@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useCaseStore } from '../store';
 import { useFallnummerData } from '../hooks/useFallnummerData';
 import { useCombinedReport } from '../hooks/useCombinedReport';
@@ -166,9 +167,23 @@ export default function SuggestionsPage() {
             </button>
           </div>
           <div className="ai-report-content">
-            <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.8', color: '#424242', fontSize: '0.95rem' }}>
+            <ReactMarkdown 
+              className="markdown-content"
+              components={{
+                h2: ({node, ...props}) => <h2 style={{color: '#1976d2', marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '600'}} {...props} />,
+                h3: ({node, ...props}) => <h3 style={{color: '#424242', marginTop: '0.8rem', marginBottom: '0.4rem', fontSize: '1rem', fontWeight: '600'}} {...props} />,
+                p: ({node, ...props}) => <p style={{color: '#424242', lineHeight: '1.8', marginBottom: '0.8rem', fontSize: '0.95rem'}} {...props} />,
+                ul: ({node, ...props}) => <ul style={{marginLeft: '1.5rem', marginBottom: '0.8rem', color: '#424242'}} {...props} />,
+                ol: ({node, ...props}) => <ol style={{marginLeft: '1.5rem', marginBottom: '0.8rem', color: '#424242'}} {...props} />,
+                li: ({node, ...props}) => <li style={{marginBottom: '0.4rem', lineHeight: '1.6'}} {...props} />,
+                strong: ({node, ...props}) => <strong style={{fontWeight: '700', color: '#1976d2'}} {...props} />,
+                em: ({node, ...props}) => <em style={{fontStyle: 'italic', color: '#757575'}} {...props} />,
+                code: ({node, ...props}) => <code style={{backgroundColor: '#f5f5f5', padding: '0.2rem 0.4rem', borderRadius: '4px', fontFamily: 'monospace', color: '#d32f2f'}} {...props} />,
+                blockquote: ({node, ...props}) => <blockquote style={{borderLeft: '4px solid #1976d2', paddingLeft: '1rem', marginLeft: '0', marginRight: '0', color: '#757575', fontStyle: 'italic'}} {...props} />,
+              }}
+            >
               {report.clinical_report}
-            </p>
+            </ReactMarkdown>
             <div className="report-meta">
               <small style={{ color: '#999' }}>
                 Generated: {new Date(report.timestamp).toLocaleString()}

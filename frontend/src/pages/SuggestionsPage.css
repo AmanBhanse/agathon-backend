@@ -309,6 +309,130 @@
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
+.markdown-content {
+  color: #424242;
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+.markdown-content h2 {
+  color: #1976d2;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.2rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 2px solid #e3f2fd;
+  padding-bottom: 0.5rem;
+}
+
+.markdown-content h2:first-child {
+  margin-top: 0;
+}
+
+.markdown-content h3 {
+  color: #424242;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.8rem;
+  margin-bottom: 0.4rem;
+}
+
+.markdown-content p {
+  color: #424242;
+  line-height: 1.8;
+  margin-bottom: 0.8rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 0.8rem;
+  color: #424242;
+}
+
+.markdown-content li {
+  margin-bottom: 0.4rem;
+  line-height: 1.6;
+}
+
+.markdown-content strong {
+  color: #1976d2;
+  font-weight: 700;
+}
+
+.markdown-content em {
+  color: #757575;
+  font-style: italic;
+}
+
+.markdown-content code {
+  background-color: #f5f5f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  color: #d32f2f;
+  font-size: 0.9rem;
+}
+
+.markdown-content pre {
+  background-color: #f5f5f5;
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 0.8rem;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  color: #333;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #1976d2;
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0.8rem;
+  margin-bottom: 0.8rem;
+  color: #757575;
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: #1976d2;
+  text-decoration: none;
+  border-bottom: 1px dotted #1976d2;
+}
+
+.markdown-content a:hover {
+  border-bottom-style: solid;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 0.8rem;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid #e0e0e0;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.markdown-content table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #1976d2;
+}
+
+.markdown-content table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
 .report-meta {
   margin-top: 1rem;
   padding-top: 1rem;
