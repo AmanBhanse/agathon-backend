@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useCaseStore } from "../store";
-
-const BASE_URL = "http://127.0.0.1:8000";
+import { API_ENDPOINTS } from "../config";
 
 /**
  * Custom hook to fetch combined clinical report from the backend AI
@@ -42,7 +41,7 @@ export function useCombinedReport(fallnummer, caseData, forceRefresh = false) {
       setError(null);
       setIsCached(false);
       try {
-        const response = await fetch(`${BASE_URL}/api/v1/getCombinedReport`, {
+        const response = await fetch(API_ENDPOINTS.getCombinedReport, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

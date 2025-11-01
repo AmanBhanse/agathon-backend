@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-
-const BASE_URL = "http://127.0.0.1:8000";
+import { API_ENDPOINTS } from "../config";
 
 /**
  * Custom hook to fetch fallnummer data from the backend API
@@ -23,9 +22,7 @@ export function useFallnummerData(fallnummer) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          `${BASE_URL}/api/v1/fallnummer/${fallnummer}`
-        );
+        const response = await fetch(API_ENDPOINTS.getFallnummer(fallnummer));
         if (!response.ok) {
           throw new Error(
             `API error: ${response.status} ${response.statusText}`
