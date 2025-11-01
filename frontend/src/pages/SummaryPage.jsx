@@ -2,6 +2,19 @@ import { useState } from 'react';
 import { useCaseStore } from '../store';
 import { useFallnummerData } from '../hooks/useFallnummerData';
 import Plot from 'react-plotly.js';
+import {
+  ChevronDown,
+  ChevronUp,
+  Pill,
+  FileText,
+  Microscope,
+  History,
+  AlertCircle,
+  BarChart3,
+  Loader,
+  Target,
+  Heart,
+} from 'lucide-react';
 import './SummaryPage.css';
 
 export default function SummaryPage() {
@@ -100,7 +113,7 @@ export default function SummaryPage() {
   return (
     <div className="summary-container">
       <div className="summary-icon-box">
-        📊
+        <BarChart3 size={32} strokeWidth={1.5} />
       </div>
       <h2 className="summary-title">Current Reports</h2>
       
@@ -123,8 +136,16 @@ export default function SummaryPage() {
         {apiData && apiData.data && !loading && (
           <div className="summary-card card-treatment">
             <p className="card-label">Treatment Approach</p>
-            <p className="card-value" style={{ color: apiData.data.curative === 1 ? '#2e7d32' : '#c62828' }}>
-              {apiData.data.curative === 1 ? '🎯 Curative' : '🤝 Palliative'}
+            <p className="card-value" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: apiData.data.curative === 1 ? '#2e7d32' : '#c62828' }}>
+              {apiData.data.curative === 1 ? (
+                <>
+                  <Target size={18} /> Curative
+                </>
+              ) : (
+                <>
+                  <Heart size={18} /> Palliative
+                </>
+              )}
             </p>
           </div>
         )}
@@ -133,8 +154,16 @@ export default function SummaryPage() {
         {apiData && apiData.data && !loading && apiData.data.palliative === 1 && (
           <div className="summary-card card-palliative">
             <p className="card-label">Palliative Care</p>
-            <p className="card-value" style={{ color: apiData.data['pall connection'] === 1 ? '#2e7d32' : '#f57c00' }}>
-              {apiData.data['pall connection'] === 1 ? '✓ Connected' : '⚠️ Not Connected'}
+            <p className="card-value" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: apiData.data['pall connection'] === 1 ? '#2e7d32' : '#f57c00' }}>
+              {apiData.data['pall connection'] === 1 ? (
+                <>
+                  <Heart size={18} /> Connected
+                </>
+              ) : (
+                <>
+                  <AlertCircle size={18} /> Not Connected
+                </>
+              )}
             </p>
           </div>
         )}
@@ -147,8 +176,8 @@ export default function SummaryPage() {
         {/* Loading State */}
         {loading && (
           <div className="detail-item">
-            <p className="detail-value" style={{ color: '#1976d2', fontStyle: 'italic' }}>
-              Loading case details...
+            <p className="detail-value" style={{ color: '#1976d2', fontStyle: 'italic', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Loader size={18} style={{ animation: 'spin 2s linear infinite' }} /> Loading case details...
             </p>
           </div>
         )}
@@ -157,7 +186,7 @@ export default function SummaryPage() {
         {error && (
           <div className="detail-item" style={{ backgroundColor: '#ffebee', padding: '1rem', borderRadius: '4px' }}>
             <p className="detail-value" style={{ color: '#c62828' }}>
-              ⚠️ Error loading data: {error}
+              <AlertCircle size={18} style={{ marginRight: '0.5rem' }} /> Error loading data: {error}
             </p>
           </div>
         )}
@@ -171,9 +200,12 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('therapySoFar')}
               >
-                <span className="accordion-title">Therapy So Far/ Bisher Therapie</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Pill size={20} style={{ color: '#1976d2' }} />
+                  <span className="accordion-title">Therapy So Far / Bisher Therapie</span>
+                </span>
                 <span className="accordion-icon">
-                  {expandedSections.therapySoFar ? '▼' : '▶'}
+                  {expandedSections.therapySoFar ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
               </button>
               {expandedSections.therapySoFar && (
@@ -191,9 +223,12 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('tumorDiagnosis')}
               >
-                <span className="accordion-title">Tumor Diagnosis/ Tumordiagnose</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <FileText size={20} style={{ color: '#1976d2' }} />
+                  <span className="accordion-title">Tumor Diagnosis / Tumordiagnose</span>
+                </span>
                 <span className="accordion-icon">
-                  {expandedSections.tumorDiagnosis ? '▼' : '▶'}
+                  {expandedSections.tumorDiagnosis ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
               </button>
               {expandedSections.tumorDiagnosis && (
@@ -211,9 +246,12 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('histoCyto')}
               >
-                <span className="accordion-title">Histo Cyto/ Histo Zyto</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Microscope size={20} style={{ color: '#1976d2' }} />
+                  <span className="accordion-title">Histo Cyto / Histo Zyto</span>
+                </span>
                 <span className="accordion-icon">
-                  {expandedSections.histoCyto ? '▼' : '▶'}
+                  {expandedSections.histoCyto ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
               </button>
               {expandedSections.histoCyto && (
@@ -231,9 +269,12 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('tumorHistory')}
               >
-                <span className="accordion-title">Tumor History/ Tumoranamnese</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <History size={20} style={{ color: '#1976d2' }} />
+                  <span className="accordion-title">Tumor History / Tumoranamnese</span>
+                </span>
                 <span className="accordion-icon">
-                  {expandedSections.tumorHistory ? '▼' : '▶'}
+                  {expandedSections.tumorHistory ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
               </button>
               {expandedSections.tumorHistory && (
@@ -251,9 +292,12 @@ export default function SummaryPage() {
                 className="accordion-header"
                 onClick={() => toggleSection('secondaryDiagnoses')}
               >
-                <span className="accordion-title">Secondary diagnoses / Sekundärdiagnosen</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <AlertCircle size={20} style={{ color: '#1976d2' }} />
+                  <span className="accordion-title">Secondary Diagnoses / Sekundärdiagnosen</span>
+                </span>
                 <span className="accordion-icon">
-                  {expandedSections.secondaryDiagnoses ? '▼' : '▶'}
+                  {expandedSections.secondaryDiagnoses ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </span>
               </button>
               {expandedSections.secondaryDiagnoses && (
@@ -280,7 +324,10 @@ export default function SummaryPage() {
       {/* Staging Visualization Section */}
       <div className="staging-section">
         <div className="staging-section-header">
-          <h3 className="staging-section-title">Tumor Staging Classification (TNM)</h3>
+          <h3 className="staging-section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <BarChart3 size={22} style={{ color: '#1565c0' }} />
+            Tumor Staging Classification (TNM)
+          </h3>
         </div>
 
         {apiData && apiData.data && !loading && (
