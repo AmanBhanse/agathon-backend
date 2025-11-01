@@ -133,6 +133,7 @@ Clinical recommendations also shown below
    - Shows cache indicator badge
 
 2. **SuggestionsPage.css**
+
    - Added `.ai-report-section` styling
    - Added `.ai-report-header` and badge styling
    - Added `.ai-report-content` styling
@@ -142,6 +143,7 @@ Clinical recommendations also shown below
    - **NEW**: `.cache-badge` styling
 
 3. **store.js** (Zustand)
+
    - **NEW**: `cachedReports` state object
    - **NEW**: `setCachedReport()` action
    - **NEW**: `getCachedReport()` selector
@@ -257,7 +259,7 @@ Clinical recommendations also shown below
 ✅ **Responsive**: Works on all screen sizes  
 ✅ **Performance**: Efficient data fetching and rendering  
 ✅ **Caching**: Eliminates repeated API calls  
-✅ **Force Refresh**: Manual regeneration available  
+✅ **Force Refresh**: Manual regeneration available
 
 ---
 

@@ -183,7 +183,11 @@ inform prognosis. Current therapy: No prior therapeutic interventions noted.
 The frontend integrates with this endpoint via the `useCombinedReport` hook:
 
 ```javascript
-const { report, loading, error, isCached } = useCombinedReport(fallnummer, caseData, forceRefresh);
+const { report, loading, error, isCached } = useCombinedReport(
+  fallnummer,
+  caseData,
+  forceRefresh
+);
 ```
 
 ### Features

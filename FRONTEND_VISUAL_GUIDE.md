@@ -109,6 +109,7 @@ App
 ## 💾 State Management - Zustand Store
 
 ### Store Structure
+
 ```javascript
 useCaseStore = {
   // Case Management
@@ -116,7 +117,7 @@ useCaseStore = {
   userName: "Dr. Smith",
   setCaseNumber: (num) => {},
   setUserName: (name) => {},
-  
+
   // ⭐ NEW: Report Caching
   cachedReports: {
     "18717770": {
@@ -133,13 +134,13 @@ useCaseStore = {
       timestamp: "..."
     }
   },
-  
+
   // ⭐ NEW: Cache Methods
   setCachedReport: (fallnummer, report) => {},
   getCachedReport: (fallnummer) => {},
   clearCachedReport: (fallnummer) => {},
   clearAllCachedReports: () => {},
-  
+
   // Lifecycle
   logout: () => {} // Clears caseNumber, userName, AND cache
 }
@@ -265,6 +266,7 @@ Step 7: Display to User
 ## ⚡ Performance Comparison
 
 ### Before Caching
+
 ```
 User Action                    Time
 ─────────────────────────────────────
@@ -279,6 +281,7 @@ Total for 3 cases:             18 sec
 ```
 
 ### With Caching ✅
+
 ```
 User Action                    Time
 ─────────────────────────────────────
@@ -297,12 +300,14 @@ Total for 3 cases:             9.3 sec (85% faster!)
 ## 🎯 Key Improvements in Frontend
 
 ### 1. **Smart Caching** ✨
+
 ```
 Old: ❌ Calls API every time → Slow & wasteful
 New: ✅ Checks cache first → Fast & efficient
 ```
 
 ### 2. **User Feedback** 📊
+
 ```
 Old: ❌ No indication of cache status
 New: ✅ Clear badges:
@@ -311,6 +316,7 @@ New: ✅ Clear badges:
 ```
 
 ### 3. **Manual Refresh** 🔄
+
 ```
 Old: ❌ No way to get fresh report
 New: ✅ "🔄 Regenerate" button
@@ -320,6 +326,7 @@ New: ✅ "🔄 Regenerate" button
 ```
 
 ### 4. **Professional UI** 🎨
+
 ```
 Old: ❌ Basic text display
 New: ✅ Formatted sections:
@@ -332,6 +339,7 @@ New: ✅ Formatted sections:
 ```
 
 ### 5. **Performance Optimized** ⚡
+
 ```
 Old: ❌ 3 seconds every view
 New: ✅ < 100ms for cached reports
@@ -343,6 +351,7 @@ New: ✅ < 100ms for cached reports
 ## 🧪 Testing Scenarios
 
 ### Scenario 1: First Time User
+
 ```
 1. Login → View "Current Reports"
 2. See: Loading spinner (2-3 sec)
@@ -354,6 +363,7 @@ Result: ✅ Fresh report generated and displayed
 ```
 
 ### Scenario 2: Returning User (Same Case)
+
 ```
 1. View report, navigate away
 2. Return to "Current Reports"
@@ -364,6 +374,7 @@ Result: ✅ Instant retrieval from cache
 ```
 
 ### Scenario 3: Force Refresh
+
 ```
 1. View cached report
 2. Click "🔄 Regenerate"
@@ -375,6 +386,7 @@ Result: ✅ Fresh report generated and cached
 ```
 
 ### Scenario 4: Multiple Cases
+
 ```
 1. View Case A → 3 sec (cached)
 2. View Case B → 3 sec (cached)
@@ -460,12 +472,12 @@ Result: ✅ Each case cached independently
 
 ## 📚 File References
 
-| File | Purpose | Status |
-|------|---------|--------|
-| `frontend/src/store.js` | Zustand state with caching | ✅ Complete |
-| `frontend/src/hooks/useCombinedReport.js` | Report fetching + caching | ✅ Complete |
-| `frontend/src/pages/SuggestionsPage.jsx` | UI display component | ✅ Complete |
-| `frontend/src/pages/SuggestionsPage.css` | Styling with button/badge | ✅ Complete |
+| File                                      | Purpose                    | Status      |
+| ----------------------------------------- | -------------------------- | ----------- |
+| `frontend/src/store.js`                   | Zustand state with caching | ✅ Complete |
+| `frontend/src/hooks/useCombinedReport.js` | Report fetching + caching  | ✅ Complete |
+| `frontend/src/pages/SuggestionsPage.jsx`  | UI display component       | ✅ Complete |
+| `frontend/src/pages/SuggestionsPage.css`  | Styling with button/badge  | ✅ Complete |
 
 ---
 
@@ -474,6 +486,7 @@ Result: ✅ Each case cached independently
 The frontend implementation includes:
 
 ### ✅ **What's Done**
+
 - Zustand store with report caching
 - Smart cache checking before API calls
 - Regenerate button for force refresh
@@ -484,6 +497,7 @@ The frontend implementation includes:
 - Production-ready code
 
 ### ⏳ **Waiting For**
+
 - Your reference code for custom report generation
 - Specific prompt engineering requirements
 - Any field mapping adjustments
