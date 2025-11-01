@@ -11,6 +11,9 @@ export default function SuggestionsPage() {
   const [forceRefresh, setForceRefresh] = useState(false);
   const { report, loading: reportLoading, error: reportError, isCached } = useCombinedReport(caseNumber, apiData?.data, forceRefresh);
   const [suggestions, setSuggestions] = useState([]);
+  const [specialistRecommendations, setSpecialistRecommendations] = useState(null);
+  const [specialistLoading, setSpecialistLoading] = useState(false);
+  const [specialistError, setSpecialistError] = useState(null);
 
   // Handle regenerate button click
   const handleRegenerateReport = () => {
@@ -18,6 +21,70 @@ export default function SuggestionsPage() {
     // Reset after use
     setTimeout(() => setForceRefresh(false), 0);
   };
+
+  // Fetch specialist recommendations from RAG
+  const fetchSpecialistRecommendations = async () => {
+    if (!apiData || !apiData.data) return;
+
+    setSpecialistLoading(true);
+    setSpecialistError(null);
+
+    try {
+      const caseData = apiData.data;
+      
+      // Build clinical summary prompt
+      const clinicalSummary = `
+Tumor Diagnosis: ${caseData['Tumor diagnosis'] || 'Not specified'}
+Histopathology/Cytology: ${caseData['Histo Cyto'] || 'Not specified'}
+Tumor History: ${caseData['Tumor history'] || 'Not specified'}
+Imaging Findings: ${caseData['Imaging'] || 'Not specified'}
+Secondary Diagnoses: ${caseData['Secondary diagnoses'] || 'Not specified'}
+Prior Therapies: ${caseData['therapy so far'] || 'No prior therapies'}
+`;
+
+      const prompt = `Based on this breast cancer case clinical summary, which medical specialists should be invited to the multidisciplinary tumor board?
+
+${clinicalSummary}
+
+Please recommend specific specialists (such as Surgical Oncology, Medical Oncology, Radiation Oncology, Radiology, Gynecology, Pathology, Palliative Medicine, etc.) and briefly justify each recommendation based on clinical findings.`;
+
+      const response = await fetch('http://127.0.0.1:8000/api/v1/queryRAG', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          question: prompt,
+          model: 'gpt-4o-mini',
+          temperature: 0.3,
+          top_k: 3,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSpecialistRecommendations({
+        recommendations: data.answer,
+        sources: data.relevant_chunks,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error fetching specialist recommendations:', error);
+      setSpecialistError(error.message);
+    } finally {
+      setSpecialistLoading(false);
+    }
+  };
+
+  // Fetch specialist recommendations when case data loads
+  useEffect(() => {
+    if (apiData && apiData.data && !specialistRecommendations) {
+      fetchSpecialistRecommendations();
+    }
+  }, [apiData, caseNumber]);
 
   // Generate suggestions based on case data
   useEffect(() => {
@@ -154,8 +221,8 @@ export default function SuggestionsPage() {
           <div className="ai-report-header">
             <div className="ai-report-title-group">
               <h3 className="ai-report-title">🤖 AI Clinical Summary</h3>
-              <span className="ai-badge">AI Generated</span>
-              {isCached && <span className="cache-badge">📦 Cached</span>}
+              
+              
             </div>
             <button 
               className="regenerate-btn"
@@ -163,7 +230,7 @@ export default function SuggestionsPage() {
               disabled={reportLoading}
               title="Regenerate report from AI"
             >
-              🔄 Regenerate
+              Refresh
             </button>
           </div>
           <div className="ai-report-content">
@@ -191,6 +258,57 @@ export default function SuggestionsPage() {
               </small>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Specialist Recommendations Section (RAG-powered) */}
+      {!fallnummerLoading && specialistRecommendations && !specialistError && (
+        <div className="specialist-section">
+          <div className="specialist-header">
+            <h3 className="specialist-title">👥 Specialist Recommendations</h3>
+            
+          </div>
+          <div className="specialist-content">
+            <div className="markdown-content">
+              <ReactMarkdown 
+                components={{
+                  h2: ({node, ...props}) => <h2 style={{color: '#1976d2', marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1.1rem', fontWeight: '600'}} {...props} />,
+                  h3: ({node, ...props}) => <h3 style={{color: '#424242', marginTop: '0.8rem', marginBottom: '0.4rem', fontSize: '1rem', fontWeight: '600'}} {...props} />,
+                  p: ({node, ...props}) => <p style={{color: '#424242', lineHeight: '1.8', marginBottom: '0.8rem', fontSize: '0.95rem'}} {...props} />,
+                  ul: ({node, ...props}) => <ul style={{marginLeft: '1.5rem', marginBottom: '0.8rem', color: '#424242'}} {...props} />,
+                  ol: ({node, ...props}) => <ol style={{marginLeft: '1.5rem', marginBottom: '0.8rem', color: '#424242'}} {...props} />,
+                  li: ({node, ...props}) => <li style={{marginBottom: '0.4rem', lineHeight: '1.6'}} {...props} />,
+                  strong: ({node, ...props}) => <strong style={{fontWeight: '700', color: '#d32f2f'}} {...props} />,
+                  em: ({node, ...props}) => <em style={{fontStyle: 'italic', color: '#757575'}} {...props} />,
+                }}
+              >
+                {specialistRecommendations.recommendations}
+              </ReactMarkdown>
+            </div>
+            {specialistRecommendations.sources && specialistRecommendations.sources.length > 0 && (
+              <div className="specialist-sources">
+                <small style={{ color: '#666', fontWeight: '500' }}>📚 Based on {specialistRecommendations.sources.length} guideline source(s)</small>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Specialist Loading State */}
+      {!fallnummerLoading && specialistLoading && (
+        <div className="specialist-section">
+          <p style={{ color: '#1976d2', fontStyle: 'italic', textAlign: 'center', padding: '1rem' }}>
+            ⏳ Generating specialist recommendations...
+          </p>
+        </div>
+      )}
+
+      {/* Specialist Error State */}
+      {!fallnummerLoading && specialistError && (
+        <div className="specialist-section" style={{ backgroundColor: '#ffebee' }}>
+          <p style={{ color: '#c62828', textAlign: 'center', padding: '1rem' }}>
+            ⚠️ Could not generate specialist recommendations: {specialistError}
+          </p>
         </div>
       )}
 

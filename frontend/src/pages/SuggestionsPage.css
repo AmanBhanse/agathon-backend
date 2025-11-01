@@ -451,3 +451,53 @@
   font-weight: 600;
   margin-bottom: 1rem;
 }
+
+/* Specialist Recommendations Section */
+.specialist-section {
+  width: 100%;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+  border: 2px solid #4caf50;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);
+}
+
+.specialist-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.specialist-title {
+  color: #2e7d32;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.rag-badge {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.specialist-content {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border-left: 4px solid #4caf50;
+}
+
+.specialist-sources {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+  color: #2e7d32;
+}
