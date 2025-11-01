@@ -25,9 +25,7 @@ export function useStagingData() {
         setLoading(true);
 
         // Fetch all Fallnummers
-        const response = await fetch(
-          API_ENDPOINTS.getAllFallnummers
-        );
+        const response = await fetch(API_ENDPOINTS.getAllFallnummers);
         if (!response.ok) {
           throw new Error(`Failed to fetch Fallnummers: ${response.status}`);
         }

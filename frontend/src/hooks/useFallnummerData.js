@@ -22,9 +22,7 @@ export function useFallnummerData(fallnummer) {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(
-          API_ENDPOINTS.getFallnummer(fallnummer)
-        );
+        const response = await fetch(API_ENDPOINTS.getFallnummer(fallnummer));
         if (!response.ok) {
           throw new Error(
             `API error: ${response.status} ${response.statusText}`
