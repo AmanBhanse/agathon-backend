@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { API_ENDPOINTS } from "../config";
 
 /**
  * Hook to fetch and process staging data from Excel
@@ -25,7 +26,7 @@ export function useStagingData() {
 
         // Fetch all Fallnummers
         const response = await fetch(
-          "http://localhost:8000/api/v1/excel/fallnummers"
+          API_ENDPOINTS.getAllFallnummers
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch Fallnummers: ${response.status}`);
@@ -49,7 +50,7 @@ export function useStagingData() {
         for (const fallnummer of fallnummers) {
           try {
             const dataResponse = await fetch(
-              `http://localhost:8000/api/v1/fallnummer/${fallnummer}`
+              API_ENDPOINTS.getFallnummer(fallnummer)
             );
             if (dataResponse.ok) {
               const { data } = await dataResponse.json();

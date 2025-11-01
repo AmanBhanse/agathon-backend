@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { useCaseStore } from '../store';
 import { useFallnummerData } from '../hooks/useFallnummerData';
 import { useCombinedReport } from '../hooks/useCombinedReport';
+import { API_ENDPOINTS } from '../config';
 import {
   AlertCircle,
   Lightbulb,
@@ -55,7 +56,7 @@ ${clinicalSummary}
 
 Please recommend specific specialists (such as Surgical Oncology, Medical Oncology, Radiation Oncology, Radiology, Gynecology, Pathology, Palliative Medicine, etc.) and briefly justify each recommendation based on clinical findings.`;
 
-      const response = await fetch('http://127.0.0.1:8000/api/v1/queryRAG', {
+      const response = await fetch(API_ENDPOINTS.queryRAG, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
