@@ -5,6 +5,7 @@
 A fully functional AI-powered clinical reporting system on the frontend with:
 
 ### ✅ Core Features
+
 1. **AI Clinical Summary Display** - Beautiful formatted AI-generated clinical reports
 2. **Intelligent Caching** - Reports cached per case to avoid duplicate API calls
 3. **Regenerate Button** - Manual refresh for getting fresh AI analysis
@@ -87,6 +88,7 @@ frontend/src/
 ## 🔄 How The System Works
 
 ### Step 1: User Logs In
+
 ```
 User selects case (e.g., 18717770)
   ↓
@@ -94,6 +96,7 @@ Case stored in Zustand: caseNumber = "18717770"
 ```
 
 ### Step 2: Navigate to Reports
+
 ```
 User clicks "Current Reports" in sidebar
   ↓
@@ -101,6 +104,7 @@ SuggestionsPage component mounts
 ```
 
 ### Step 3: Automatic Data Fetch
+
 ```
 useFallnummerData hook triggered with caseNumber
   ↓
@@ -110,6 +114,7 @@ Returns: Patient data (tumor diagnosis, staging, history, etc.)
 ```
 
 ### Step 4: AI Report Generation
+
 ```
 useCombinedReport hook triggered with case data
   ↓
@@ -131,6 +136,7 @@ useCombinedReport hook triggered with case data
 ```
 
 ### Step 5: Display to User
+
 ```
 Report renders in AI Report Section:
 - Title with "🤖 AI Clinical Summary"
@@ -146,6 +152,7 @@ Report renders in AI Report Section:
 ## 📊 Key Components Explained
 
 ### 1. **Zustand Store** (State Management)
+
 ```javascript
 {
   caseNumber: "18717770",              // Current case
@@ -164,6 +171,7 @@ Report renders in AI Report Section:
 ```
 
 ### 2. **useCombinedReport Hook** (Report Management)
+
 ```javascript
 // Usage
 const { report, loading, error, isCached } = useCombinedReport(
@@ -187,6 +195,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ```
 
 ### 3. **SuggestionsPage** (Main Component)
+
 - Displays AI report section prominently
 - Shows clinical recommendations below
 - Handles loading/error states
@@ -197,15 +206,16 @@ const { report, loading, error, isCached } = useCombinedReport(
 
 ## ⚡ Performance Metrics
 
-| Action | Time | Notes |
-|--------|------|-------|
-| First report load | 2-3 sec | Initial API call to Azure |
-| Cached report load | < 100ms | From Zustand store |
-| UI render | < 50ms | React component render |
-| Page navigation | < 100ms | Switching between pages |
-| Force regenerate | 2-3 sec | Fresh API call |
+| Action             | Time    | Notes                     |
+| ------------------ | ------- | ------------------------- |
+| First report load  | 2-3 sec | Initial API call to Azure |
+| Cached report load | < 100ms | From Zustand store        |
+| UI render          | < 50ms  | React component render    |
+| Page navigation    | < 100ms | Switching between pages   |
+| Force regenerate   | 2-3 sec | Fresh API call            |
 
 **Total Time for User to See Report:**
+
 - First time: ~2-3 seconds (API)
 - Subsequent views: ~100ms (cached) ⚡
 
@@ -214,6 +224,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ## 🎯 User Experience Flow
 
 ### Scenario 1: First Time Viewing Report
+
 ```
 1. User logs in → Case stored
 2. Navigates to Reports → Page loads
@@ -225,6 +236,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ```
 
 ### Scenario 2: Viewing Same Report Again
+
 ```
 1. User navigates away (e.g., to Summary)
 2. Clicks back to Reports
@@ -234,6 +246,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ```
 
 ### Scenario 3: Getting Fresh Analysis
+
 ```
 1. User views cached report
 2. Clicks "🔄 Regenerate" button
@@ -245,6 +258,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ```
 
 ### Scenario 4: Viewing Different Case
+
 ```
 1. User logs out
 2. Logs in with different case number
@@ -260,6 +274,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ## 🛠️ Technical Implementation Details
 
 ### Caching Strategy
+
 ```javascript
 // Before making API call, check cache:
 if (!forceRefresh && cachedReports[fallnummer]) {
@@ -275,6 +290,7 @@ if (!forceRefresh && cachedReports[fallnummer]) {
 ```
 
 ### Re-render Optimization
+
 ```javascript
 useEffect(() => {
   // Only runs when these dependencies change:
@@ -285,6 +301,7 @@ useEffect(() => {
 ```
 
 ### Error Handling
+
 ```javascript
 try {
   const response = await fetch(...);
@@ -302,14 +319,17 @@ try {
 ## 🔐 Data Safety
 
 ✅ **No sensitive data in frontend cache**
+
 - Only cached: Report object + timestamp
 - Report is AI-generated text (non-sensitive)
 
 ✅ **Automatic cache clearing**
+
 - Cleared on logout
 - Per-case storage (no cross-case leakage)
 
 ✅ **Fallback handling**
+
 - If cache unavailable → Regenerate from API
 - If API fails → Show error with retry option
 
@@ -318,17 +338,20 @@ try {
 ## 📱 Responsive Design
 
 ### Mobile (< 768px)
+
 - ✅ Single column layout
 - ✅ Stack buttons vertically
 - ✅ Responsive font sizes
 - ✅ Touch-friendly buttons
 
 ### Tablet (768px - 1024px)
+
 - ✅ Comfortable spacing
 - ✅ Side-by-side badges and button
 - ✅ Readable font sizes
 
 ### Desktop (> 1024px)
+
 - ✅ Full width with max constraint
 - ✅ Professional spacing
 - ✅ Optimal line length for reading
@@ -365,6 +388,7 @@ try {
 ## 📚 API Endpoints Used
 
 ### 1. Fetch Patient Data
+
 ```
 GET /api/v1/fallnummer/{fallnummer}
 
@@ -382,6 +406,7 @@ Response:
 ```
 
 ### 2. Generate AI Report
+
 ```
 POST /api/v1/getCombinedReport
 
@@ -413,6 +438,6 @@ Your frontend now has:
 ✅ **Error Handling** - Graceful failure modes  
 ✅ **Responsive** - Works on all devices  
 ✅ **Clinical Focus** - AI reports prominently displayed  
-✅ **Recommendations** - Clinical suggestions below reports  
+✅ **Recommendations** - Clinical suggestions below reports
 
 The system is production-ready and waiting for your backend reference code to customize the AI report generation! 🚀

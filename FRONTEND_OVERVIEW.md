@@ -19,19 +19,20 @@ const useCaseStore = create((set) => ({
   userName: "",
   setCaseNumber: (num) => set({ caseNumber: num }),
   setUserName: (name) => set({ userName: name }),
-  
+
   // Report Caching
   cachedReports: {}, // { fallnummer: { report, timestamp } }
   setCachedReport: (fallnummer, report) => ...,
   getCachedReport: (fallnummer) => ...,
   clearCachedReport: (fallnummer) => ...,
   clearAllCachedReports: () => ...,
-  
+
   logout: () => set({ caseNumber: "", userName: "", cachedReports: {} }),
 }));
 ```
 
 **Key Features:**
+
 - ✅ Stores reports by fallnummer for instant retrieval
 - ✅ Automatically clears cache on logout
 - ✅ Persists across page navigation
@@ -45,13 +46,14 @@ Custom hook for fetching and caching AI reports:
 
 ```javascript
 const { report, loading, error, isCached } = useCombinedReport(
-  fallnummer,      // Case number
-  caseData,        // Patient data
-  forceRefresh     // Force bypass cache (optional)
+  fallnummer, // Case number
+  caseData, // Patient data
+  forceRefresh // Force bypass cache (optional)
 );
 ```
 
 **Workflow:**
+
 1. **Check Cache**: If report exists and `forceRefresh=false`, return cached instantly
 2. **Mark as Cached**: Set `isCached=true` to show badge
 3. **API Call**: If not cached or force refresh, fetch from backend
@@ -59,6 +61,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 5. **Return**: Provide report, loading state, error, and cache indicator
 
 **Return Object:**
+
 - `report`: Full AI-generated clinical report object
 - `loading`: Boolean indicating API call in progress
 - `error`: Error message if generation fails
@@ -78,7 +81,7 @@ Main Reports page displaying AI summaries and clinical recommendations:
       <span className="ai-badge">AI Generated</span>
       {isCached && <span className="cache-badge">📦 Cached</span>}
     </div>
-    <button 
+    <button
       className="regenerate-btn"
       onClick={handleRegenerateReport}
       disabled={reportLoading}
@@ -86,14 +89,13 @@ Main Reports page displaying AI summaries and clinical recommendations:
       🔄 Regenerate
     </button>
   </div>
-  
-  <div className="ai-report-content">
-    {/* Report content displays here */}
-  </div>
+
+  <div className="ai-report-content">{/* Report content displays here */}</div>
 </div>
 ```
 
 **Key Features:**
+
 - ✅ Displays AI-generated clinical summary prominently
 - ✅ Shows "Cached" badge when using stored report
 - ✅ "Regenerate" button to force fresh AI analysis
@@ -199,23 +201,24 @@ Main Reports page displaying AI summaries and clinical recommendations:
 
 ### Visual Indicators
 
-| Element | Purpose | Styling |
-|---------|---------|---------|
-| 🤖 AI Clinical Summary | Report title | Blue, bold, 1.3rem |
-| AI Generated | Shows AI-generated badge | Green gradient |
-| 📦 Cached | Shows data is from cache | Orange gradient |
-| 🔄 Regenerate | Force refresh button | Blue gradient, hover effect |
-| 📋 Clinical Recommendations | Recommendations section title | Gray, bold |
+| Element                     | Purpose                       | Styling                     |
+| --------------------------- | ----------------------------- | --------------------------- |
+| 🤖 AI Clinical Summary      | Report title                  | Blue, bold, 1.3rem          |
+| AI Generated                | Shows AI-generated badge      | Green gradient              |
+| 📦 Cached                   | Shows data is from cache      | Orange gradient             |
+| 🔄 Regenerate               | Force refresh button          | Blue gradient, hover effect |
+| 📋 Clinical Recommendations | Recommendations section title | Gray, bold                  |
 
 ---
 
 ## 🧪 Testing the Frontend
 
 ### Test 1: Initial Report Load
+
 ```
 1. Login with fallnummer (e.g., 18717770)
 2. Navigate to "Current Reports" page
-3. Expected: 
+3. Expected:
    - Loading spinner appears
    - Report generates via AI
    - "AI Generated" badge shows
@@ -223,6 +226,7 @@ Main Reports page displaying AI summaries and clinical recommendations:
 ```
 
 ### Test 2: Cache Retrieval
+
 ```
 1. Navigate away from Reports page
 2. Go to another page (e.g., Summary)
@@ -235,6 +239,7 @@ Main Reports page displaying AI summaries and clinical recommendations:
 ```
 
 ### Test 3: Force Regenerate
+
 ```
 1. View a cached report
 2. Click "🔄 Regenerate" button
@@ -247,6 +252,7 @@ Main Reports page displaying AI summaries and clinical recommendations:
 ```
 
 ### Test 4: Different Cases
+
 ```
 1. Login with fallnummer A (18717770)
 2. View report, verify cache works
@@ -256,6 +262,7 @@ Main Reports page displaying AI summaries and clinical recommendations:
 ```
 
 ### Test 5: Logout Cache Clear
+
 ```
 1. Login and generate/cache a report
 2. Click Logout
@@ -267,18 +274,19 @@ Main Reports page displaying AI summaries and clinical recommendations:
 
 ## 🚀 Performance Benefits
 
-| Scenario | Time | Improvement |
-|----------|------|-------------|
-| First report (cache miss) | 2-3 seconds | Baseline |
-| Second view (cached) | < 100ms | 20-30x faster |
-| 10 cached cases (switching) | < 100ms each | Instant UI |
-| Force regenerate | 2-3 seconds | Fresh data |
+| Scenario                    | Time         | Improvement   |
+| --------------------------- | ------------ | ------------- |
+| First report (cache miss)   | 2-3 seconds  | Baseline      |
+| Second view (cached)        | < 100ms      | 20-30x faster |
+| 10 cached cases (switching) | < 100ms each | Instant UI    |
+| Force regenerate            | 2-3 seconds  | Fresh data    |
 
 ---
 
 ## 💾 Caching Details
 
 ### Storage Structure
+
 ```javascript
 cachedReports: {
   "18717770": {
@@ -299,6 +307,7 @@ cachedReports: {
 ```
 
 ### Cache Lifecycle
+
 1. **Creation**: Report generated and stored with current timestamp
 2. **Retrieval**: Checked on component mount or case change
 3. **Reuse**: Returned instantly if exists
@@ -310,20 +319,24 @@ cachedReports: {
 ## 🔌 API Integration
 
 ### Fallnummer Data Hook
+
 ```javascript
 const { data, loading, error } = useFallnummerData(caseNumber);
 ```
+
 - Fetches from: `GET /api/v1/fallnummer/{caseNumber}`
 - Returns: Complete patient case data
 
 ### Combined Report Hook
+
 ```javascript
 const { report, loading, error, isCached } = useCombinedReport(
-  caseNumber, 
-  apiData?.data, 
+  caseNumber,
+  apiData?.data,
   forceRefresh
 );
 ```
+
 - Fetches from: `POST /api/v1/getCombinedReport`
 - With caching: Checks Zustand before API call
 - Returns: AI-generated clinical summary
@@ -351,22 +364,22 @@ const { report, loading, error, isCached } = useCombinedReport(
 ✅ **Clinical Recommendations**: Dynamic suggestions based on case data  
 ✅ **Responsive UI**: Works on all screen sizes  
 ✅ **Performance Optimized**: Minimal re-renders with proper dependency management  
-✅ **Cache Management**: Automatic cleanup on logout  
+✅ **Cache Management**: Automatic cleanup on logout
 
 ---
 
 ## 📊 Current Implementation Status
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Zustand store setup | ✅ Complete | Caching fully integrated |
-| useCombinedReport hook | ✅ Complete | Cache checking before API |
-| SuggestionsPage display | ✅ Complete | AI report + recommendations |
-| CSS styling | ✅ Complete | All visual elements styled |
-| Regenerate button | ✅ Complete | Force refresh working |
-| Cache badge | ✅ Complete | Shows on cached loads |
-| Frontend build | ✅ Complete | No errors or warnings |
-| Testing | 🔄 In Progress | Ready for manual testing |
+| Feature                 | Status         | Notes                       |
+| ----------------------- | -------------- | --------------------------- |
+| Zustand store setup     | ✅ Complete    | Caching fully integrated    |
+| useCombinedReport hook  | ✅ Complete    | Cache checking before API   |
+| SuggestionsPage display | ✅ Complete    | AI report + recommendations |
+| CSS styling             | ✅ Complete    | All visual elements styled  |
+| Regenerate button       | ✅ Complete    | Force refresh working       |
+| Cache badge             | ✅ Complete    | Shows on cached loads       |
+| Frontend build          | ✅ Complete    | No errors or warnings       |
+| Testing                 | 🔄 In Progress | Ready for manual testing    |
 
 ---
 
@@ -383,6 +396,7 @@ const { report, loading, error, isCached } = useCombinedReport(
 ## 🎊 Summary
 
 The frontend now has a complete AI report integration system with intelligent caching that:
+
 1. Displays beautiful, formatted clinical summaries
 2. Caches reports to eliminate duplicate API calls
 3. Provides visual feedback about data source (cached vs fresh)
