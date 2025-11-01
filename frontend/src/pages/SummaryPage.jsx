@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useCaseStore } from '../store';
 import { useFallnummerData } from '../hooks/useFallnummerData';
+import Plot from 'react-plotly.js';
 import './SummaryPage.css';
 
 export default function SummaryPage() {
@@ -13,6 +14,7 @@ export default function SummaryPage() {
     tumorDiagnosis: false,
     histoCyto: false,
     tumorHistory: false,
+    secondaryDiagnoses: false,
   });
   
   // Fetch fallnummer data from API
@@ -34,6 +36,65 @@ export default function SummaryPage() {
       .replace(/\\m[01]\\/g, '')
       .replace(/\\\\/g, '\n')
       .trim();
+  };
+
+  // Create staging data chart from current case
+  const createStagingChart = () => {
+    if (!apiData || !apiData.data) {
+      return { data: [], layout: { title: 'No Data' } };
+    }
+
+    const stagingVariables = [
+      { key: 'Staging clinic cT', label: 'Clinical cT', type: 'clinical' },
+      { key: 'Staging Clinic N', label: 'Clinical cN', type: 'clinical' },
+      { key: 'Staging Clinic M', label: 'Clinical cM', type: 'clinical' },
+      { key: 'Staging Clinic UICC', label: 'Clinical UICC', type: 'clinical' },
+      { key: 'Staging Path pT', label: 'Pathological pT', type: 'pathological' },
+      { key: 'Staging Path N', label: 'Pathological pN', type: 'pathological' },
+      { key: 'Staging Path M', label: 'Pathological pM', type: 'pathological' },
+      { key: 'Staging Path UICC', label: 'Pathological UICC', type: 'pathological' },
+    ];
+
+    const labels = [];
+    const values = [];
+    const colors = [];
+
+    stagingVariables.forEach((item) => {
+      const value = apiData.data[item.key];
+      if (value !== null && value !== undefined && value !== '') {
+        labels.push(item.label);
+        values.push(value);
+        colors.push(item.type === 'clinical' ? '#1976d2' : '#d32f2f');
+      }
+    });
+
+    return {
+      data: [
+        {
+          x: labels,
+          y: values,
+          type: 'bar',
+          marker: { color: colors },
+          hovertemplate: '<b>%{x}</b><br>Stage: %{y}<extra></extra>',
+          textposition: 'outside',
+          text: values,
+        },
+      ],
+      layout: {
+        title: 'Tumor Staging Classification (TNM)',
+        xaxis: { title: 'Staging Variables' },
+        yaxis: { title: 'Stage Value' },
+        hovermode: 'closest',
+        margin: { l: 60, r: 40, t: 60, b: 120 },
+        paper_bgcolor: '#f5f5f5',
+        plot_bgcolor: '#ffffff',
+        font: { size: 12 },
+        height: 400,
+        xaxis: {
+          tickangle: -45,
+        },
+      },
+    };
   };
 
   return (
@@ -183,6 +244,26 @@ export default function SummaryPage() {
                 </div>
               )}
             </div>
+
+            {/* Secondary Diagnoses Accordion */}
+            <div className="accordion-item">
+              <button
+                className="accordion-header"
+                onClick={() => toggleSection('secondaryDiagnoses')}
+              >
+                <span className="accordion-title">Secondary diagnoses / Sekundärdiagnosen</span>
+                <span className="accordion-icon">
+                  {expandedSections.secondaryDiagnoses ? '▼' : '▶'}
+                </span>
+              </button>
+              {expandedSections.secondaryDiagnoses && (
+                <div className="accordion-content">
+                  <p style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6', color: '#555' }}>
+                    {cleanText(apiData.data['Secondary diagnoses'])}
+                  </p>
+                </div>
+              )}
+            </div>
           </>
         )}
 
@@ -193,6 +274,30 @@ export default function SummaryPage() {
               No case selected. Please login to view details.
             </p>
           </div>
+        )}
+      </div>
+
+      {/* Staging Visualization Section */}
+      <div className="staging-section">
+        <div className="staging-section-header">
+          <h3 className="staging-section-title">Tumor Staging Classification (TNM)</h3>
+        </div>
+
+        {apiData && apiData.data && !loading && (
+          <div className="staging-chart-container">
+            <Plot
+              data={createStagingChart().data}
+              layout={createStagingChart().layout}
+              config={{ responsive: true, displayModeBar: false }}
+              style={{ width: '100%' }}
+            />
+          </div>
+        )}
+
+        {!apiData && !loading && !error && (
+          <p style={{ textAlign: 'center', color: '#757575', fontStyle: 'italic' }}>
+            No case selected. Select a case to view staging information.
+          </p>
         )}
       </div>
     </div>
