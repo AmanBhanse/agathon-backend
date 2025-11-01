@@ -77,6 +77,52 @@ class RAGSystem:
             embeddings.extend([item.embedding for item in response.data])
         
         return embeddings
+
+    def save_chunks_json(self, json_path: Optional[str] = None) -> str:
+        """Save the current chunks to a JSON file and return its path."""
+        if json_path is None:
+            base, _ = os.path.splitext(self.embeddings_path)
+            json_path = f"{base}_chunks.json"
+
+        try:
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump({'chunks': self.chunks}, f, ensure_ascii=False, indent=2)
+            print(f"Chunks saved to JSON: {json_path}")
+            return json_path
+        except Exception as e:
+            raise Exception(f"Error saving chunks JSON: {str(e)}")
+
+    def load_chunks_from_json(self, json_path: str) -> None:
+        """Load chunks from a JSON file into self.chunks."""
+        if not os.path.exists(json_path):
+            raise FileNotFoundError(f"Chunks JSON not found: {json_path}")
+
+        try:
+            with open(json_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                self.chunks = data.get('chunks', [])
+            print(f"Loaded {len(self.chunks)} chunks from JSON: {json_path}")
+        except Exception as e:
+            raise Exception(f"Error loading chunks JSON: {str(e)}")
+
+    def create_embeddings_from_json(self, json_path: Optional[str] = None) -> None:
+        """Create embeddings by first reading chunks JSON and then generating embeddings."""
+        if json_path is None:
+            base, _ = os.path.splitext(self.embeddings_path)
+            json_path = f"{base}_chunks.json"
+
+        # Ensure chunks are loaded from json
+        self.load_chunks_from_json(json_path)
+
+        if not self.chunks:
+            raise ValueError("No chunks available to create embeddings from JSON")
+
+        print("Creating embeddings from JSON chunks...")
+        self.embeddings = self.create_embeddings(self.chunks)
+        print(f"Created {len(self.embeddings)} embeddings from JSON")
+
+        # Persist embeddings along with chunks
+        self.save_embeddings()
     
     def save_embeddings(self):
         """Save embeddings and chunks to disk"""
@@ -142,13 +188,14 @@ class RAGSystem:
         print("Chunking text...")
         self.chunks = self.chunk_text(text, chunk_size, overlap)
         print(f"Created {len(self.chunks)} chunks")
-        
-        print("Creating embeddings...")
-        self.embeddings = self.create_embeddings(self.chunks)
+
+        # Save chunks to JSON first (two-step process)
+        chunks_json_path = self.save_chunks_json()
+
+        # Create embeddings from the JSON file we just wrote
+        self.create_embeddings_from_json(chunks_json_path)
+
         print("PDF loaded and indexed successfully!")
-        
-        # Save embeddings
-        self.save_embeddings()
     
     def query(self, question: str, model: str = "gpt-4o-mini", 
               temperature: float = 0.3, top_k: int = 3) -> Tuple[str, List[dict]]:

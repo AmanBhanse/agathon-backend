@@ -5,27 +5,13 @@ import './RAGQueryPage.css';
 
 export default function RAGQueryPage() {
   const [question, setQuestion] = useState('');
-  const { answer, relevantChunks, loading, error, query, setTopK, setTemperature } = useRAGQuery(3);
-  const [topK, setTopKLocal] = useState(3);
-  const [temperature, setTemperatureLocal] = useState(0.3);
+  const { answer, relevantChunks, loading, error, query } = useRAGQuery(3);
 
   const handleQuerySubmit = (e) => {
     e.preventDefault();
     if (question.trim()) {
       query(question);
     }
-  };
-
-  const handleTopKChange = (e) => {
-    const newTopK = parseInt(e.target.value);
-    setTopKLocal(newTopK);
-    setTopK(newTopK);
-  };
-
-  const handleTemperatureChange = (e) => {
-    const newTemp = parseFloat(e.target.value);
-    setTemperatureLocal(newTemp);
-    setTemperature(newTemp);
   };
 
   return (
@@ -49,42 +35,6 @@ export default function RAGQueryPage() {
               disabled={loading}
               rows="4"
             />
-          </div>
-
-          <div className="form-controls">
-            <div className="control-group">
-              <label htmlFor="topK" className="control-label">
-                Relevant Sources (top_k): {topK}
-              </label>
-              <input
-                id="topK"
-                type="range"
-                min="1"
-                max="10"
-                value={topK}
-                onChange={handleTopKChange}
-                disabled={loading}
-                className="slider"
-              />
-            </div>
-
-            <div className="control-group">
-              <label htmlFor="temperature" className="control-label">
-                Response Specificity: {temperature.toFixed(1)}
-              </label>
-              <input
-                id="temperature"
-                type="range"
-                min="0"
-                max="1"
-                step="0.1"
-                value={temperature}
-                onChange={handleTemperatureChange}
-                disabled={loading}
-                className="slider"
-              />
-              <small className="control-hint">Lower = More specific, Higher = More creative</small>
-            </div>
           </div>
 
           <button type="submit" className="submit-btn" disabled={loading || !question.trim()}>
