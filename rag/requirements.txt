@@ -1,0 +1,8 @@
+ipykernel
+langchain
+langchain-openai
+python-dotenv
+scikit-learn
+azure-ai-projects
+azure-identity
+openai
