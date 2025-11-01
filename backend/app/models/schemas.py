@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 
 class FallnummerResponse(BaseModel):
     """Response model for Fallnummer data"""
@@ -70,3 +70,54 @@ class CombinedReportResponse(BaseModel):
     clinical_report: str
     timestamp: Optional[str] = None
     message: str = "Report generated successfully"
+
+
+class RAGChunkInfo(BaseModel):
+    """Information about a relevant chunk from RAG"""
+    rank: int
+    text: str
+    similarity: float
+    similarity_percentage: float
+    
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "rank": 1,
+                "text": "Sample text from guideline...",
+                "similarity": 0.8542,
+                "similarity_percentage": 85.42
+            }
+        }
+
+
+class RAGQueryRequest(BaseModel):
+    """Request model for RAG query"""
+    question: str
+    model: str = "gpt-4o-mini"
+    temperature: float = 0.3
+    top_k: int = 3
+    
+    class Config:
+        schema_extra = {
+            "example": {
+                "question": "What are the treatment recommendations for early-stage breast cancer?",
+                "model": "gpt-4o-mini",
+                "temperature": 0.3,
+                "top_k": 3
+            }
+        }
+
+
+class RAGQueryResponse(BaseModel):
+    """Response model for RAG query"""
+    answer: str
+    relevant_chunks: List[RAGChunkInfo]
+    message: str = "Query answered successfully"
+
+
+class RAGStatusResponse(BaseModel):
+    """Response model for RAG system status"""
+    indexed: bool
+    chunks_count: int
+    embeddings_file: str
+    message: str = "Status retrieved successfully"

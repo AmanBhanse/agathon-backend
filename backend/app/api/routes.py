@@ -1,12 +1,14 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, File, UploadFile, Request
 from app.services.excel_service import excel_service
 from app.services.openai_service import openai_service
 from app.models.schemas import (
     FallnummerResponse, ExcelInfoResponse, ErrorResponse,
-    CombinedReportRequest, CombinedReportResponse
+    CombinedReportRequest, CombinedReportResponse,
+    RAGQueryRequest, RAGQueryResponse, RAGStatusResponse
 )
 from typing import Optional
 from datetime import datetime
+import os
 
 router = APIRouter()
 
@@ -141,3 +143,267 @@ async def get_combined_report(request: CombinedReportRequest):
             status_code=500,
             detail=f"Error generating report: {str(e)}"
         )
+
+
+# RAG (Retrieval-Augmented Generation) Endpoints
+
+@router.post("/queryRAG", response_model=RAGQueryResponse)
+async def query_rag(request: RAGQueryRequest, req: Request):
+    """
+    Query the RAG system for breast cancer guidelines information.
+    
+    This endpoint searches the S3 Guideline Breast Cancer PDF for relevant information
+    using embeddings and returns AI-generated answers based on the retrieved context.
+    
+    Request body:
+    - question: The clinical question to ask
+    - model: LLM model to use (default: gpt-4o-mini)
+    - temperature: Response creativity (default: 0.3)
+    - top_k: Number of relevant chunks to retrieve (default: 3)
+    
+    Returns:
+    - answer: AI-generated answer based on guideline content
+    - relevant_chunks: Source chunks from the PDF used for context
+    """
+    try:
+        rag_system = getattr(req.app.state, 'rag_system', None)
+        
+        if rag_system is None:
+            raise HTTPException(
+                status_code=503,
+                detail="RAG system not initialized. Please ensure the S3 Guideline PDF has been indexed."
+            )
+        
+        if not rag_system.embeddings:
+            raise HTTPException(
+                status_code=400,
+                detail="No embeddings loaded. Please index a PDF first using /api/v1/indexPDF"
+            )
+        
+        answer, relevant_chunks = rag_system.query(
+            request.question,
+            model=request.model,
+            temperature=request.temperature,
+            top_k=request.top_k
+        )
+        
+        return RAGQueryResponse(
+            answer=answer,
+            relevant_chunks=[
+                {
+                    "rank": idx + 1,
+                    "text": chunk["text"],
+                    "similarity": chunk["similarity"],
+                    "similarity_percentage": round(chunk["similarity"] * 100, 2)
+                }
+                for idx, chunk in enumerate(relevant_chunks)
+            ],
+            message="Query answered successfully using S3 Guideline Breast Cancer"
+        )
+    
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error querying RAG system: {str(e)}"
+        )
+
+
+@router.post("/indexPDF")
+async def index_pdf(file: UploadFile = File(...), 
+                   chunk_size: int = 1000, 
+                   overlap: int = 200,
+                   req: Request = None):
+    """
+    Index a PDF file for RAG queries.
+    
+    This endpoint uploads and processes a PDF file, extracting text, creating chunks,
+    and generating embeddings for semantic search.
+    
+    Parameters:
+    - file: PDF file to upload and index
+    - chunk_size: Size of text chunks in characters (default: 1000)
+    - overlap: Overlap between chunks in characters (default: 200)
+    
+    Returns:
+    - message: Status message
+    - chunks_count: Number of chunks created from the PDF
+    """
+    try:
+        # Get RAG system from app state (passed via dependency injection below)
+        from fastapi import Depends
+        
+        # We need to get the request context from the endpoint caller
+        rag_system = getattr(req.app.state, 'rag_system', None) if req else None
+        
+        if rag_system is None:
+            raise HTTPException(
+                status_code=503,
+                detail="RAG system not initialized"
+            )
+        
+        if not file.filename.lower().endswith('.pdf'):
+            raise HTTPException(
+                status_code=400,
+                detail="Only PDF files are supported"
+            )
+        
+        # Save uploaded file temporarily
+        temp_path = f"temp_{file.filename}"
+        with open(temp_path, "wb") as f:
+            content = await file.read()
+            f.write(content)
+        
+        try:
+            # Process PDF
+            rag_system.load_pdf(temp_path, chunk_size, overlap)
+            
+            return {
+                "message": "PDF indexed successfully",
+                "chunks_count": len(rag_system.chunks),
+                "embeddings_file": rag_system.embeddings_path
+            }
+        finally:
+            # Clean up temp file
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+    
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/ragStatus", response_model=RAGStatusResponse)
+async def get_rag_status(req: Request):
+    """
+    Get the current status of the RAG system.
+    
+    Returns:
+    - indexed: Whether the system has loaded embeddings
+    - chunks_count: Number of chunks currently loaded
+    - embeddings_file: Path to the embeddings file
+    """
+    try:
+        rag_system = getattr(req.app.state, 'rag_system', None)
+        
+        if rag_system is None:
+            raise HTTPException(
+                status_code=503,
+                detail="RAG system not initialized"
+            )
+        
+        return RAGStatusResponse(
+            indexed=len(rag_system.chunks) > 0,
+            chunks_count=len(rag_system.chunks),
+            embeddings_file=rag_system.embeddings_path,
+            message="RAG status retrieved successfully"
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/embeddingsInfo")
+async def get_embeddings_info(req: Request):
+    """
+    Get detailed information about the embeddings.
+    
+    Returns:
+    - total_chunks: Total number of chunks in the system
+    - total_embeddings: Total number of embeddings vectors
+    - last_5_chunks: Information about the last 5 chunks with their embeddings
+      - chunk_index: Index of the chunk
+      - text: Text content of the chunk (truncated to 200 chars)
+      - embedding_dimension: Dimension of the embedding vector
+      - embedding_sample: First 10 values of the embedding vector (for inspection)
+      - embedding_vector: Complete embedding vector (full precision)
+    - embeddings_file: Path to the embeddings file
+    - embeddings_file_size_mb: Size of embeddings file in MB
+    """
+    try:
+        rag_system = getattr(req.app.state, 'rag_system', None)
+        
+        if rag_system is None:
+            raise HTTPException(
+                status_code=503,
+                detail="RAG system not initialized"
+            )
+        
+        if len(rag_system.chunks) == 0:
+            raise HTTPException(
+                status_code=400,
+                detail="No chunks available. Please index a PDF first."
+            )
+        
+        total_chunks = len(rag_system.chunks)
+        total_embeddings = len(rag_system.embeddings)
+        
+        # Get last 5 chunks
+        last_5_start = max(0, total_chunks - 5)
+        last_5_chunks_info = []
+        
+        for idx in range(last_5_start, total_chunks):
+            chunk_text = rag_system.chunks[idx]
+            embedding_vector = rag_system.embeddings[idx]
+            
+            last_5_chunks_info.append({
+                "chunk_index": idx,
+                "chunk_number_from_end": total_chunks - idx,  # 1 = last chunk, 2 = second last, etc.
+                "text_preview": chunk_text[:200] + "..." if len(chunk_text) > 200 else chunk_text,
+                "text_full_length": len(chunk_text),
+                "embedding_dimension": len(embedding_vector),
+                "embedding_sample": embedding_vector[:10],  # First 10 values
+                "embedding_vector": embedding_vector,  # Full vector
+                "embedding_magnitude": sum(x**2 for x in embedding_vector) ** 0.5  # L2 norm
+            })
+        
+        # Get file size
+        embeddings_file_size_mb = 0
+        if os.path.exists(rag_system.embeddings_path):
+            embeddings_file_size_mb = os.path.getsize(rag_system.embeddings_path) / (1024 * 1024)
+        
+        return {
+            "total_chunks": total_chunks,
+            "total_embeddings": total_embeddings,
+            "embeddings_match": total_chunks == total_embeddings,
+            "embeddings_file": rag_system.embeddings_path,
+            "embeddings_file_size_mb": round(embeddings_file_size_mb, 2),
+            "last_5_chunks": last_5_chunks_info,
+            "message": f"Retrieved information about {total_chunks} total chunks and last 5 chunks with embeddings"
+        }
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error retrieving embeddings info: {str(e)}")
+
+
+@router.delete("/embeddings")
+async def delete_embeddings(req: Request):
+    """
+    Delete stored embeddings and clear the RAG system.
+    
+    This removes the embeddings file and resets the system.
+    """
+    try:
+        rag_system = getattr(req.app.state, 'rag_system', None)
+        
+        if rag_system is None:
+            raise HTTPException(
+                status_code=503,
+                detail="RAG system not initialized"
+            )
+        
+        if os.path.exists(rag_system.embeddings_path):
+            os.remove(rag_system.embeddings_path)
+        
+        rag_system.chunks = []
+        rag_system.embeddings = []
+        
+        return {"message": "Embeddings deleted successfully"}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

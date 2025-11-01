@@ -10,6 +10,7 @@ export default function Sidebar() {
     { id: 'home', label: 'Home', icon: '🏠', path: '/app/home' },
     { id: 'reports', label: 'Reports', icon: '📊', path: '/app/summary' },
     { id: 'suggestions', label: 'Suggestions', icon: '💡', path: '/app/suggestions' },
+    { id: 'rag', label: 'Guidelines', icon: '📚', path: '/app/rag-query' },
   ];
 
   const handleNavClick = (path) => {
