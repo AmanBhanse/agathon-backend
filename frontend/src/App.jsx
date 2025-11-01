@@ -30,7 +30,7 @@ function App() {
           }
         />
         <Route
-          path="/app/suggestions"
+          path="/app/analysis"
           element={
             <ProtectedRoute>
               <SuggestionsPage />

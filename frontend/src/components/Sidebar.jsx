@@ -9,7 +9,7 @@ export default function Sidebar() {
   const navItems = [
     { id: 'home', label: 'Home', icon: '🏠', path: '/app/home' },
     { id: 'reports', label: 'Reports', icon: '📊', path: '/app/summary' },
-    { id: 'suggestions', label: 'Suggestions', icon: '💡', path: '/app/suggestions' },
+    { id: 'analysis', label: 'Analysis', icon: '💡', path: '/app/analysis' },
     { id: 'rag', label: 'Guidelines', icon: '📚', path: '/app/rag-query' },
   ];
 
