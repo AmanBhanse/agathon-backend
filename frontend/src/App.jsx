@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
 import SummaryPage from './pages/SummaryPage';
 import SuggestionsPage from './pages/SuggestionsPage';
+import RAGQueryPage from './pages/RAGQueryPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -33,6 +34,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SuggestionsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/app/rag-query"
+          element={
+            <ProtectedRoute>
+              <RAGQueryPage />
             </ProtectedRoute>
           }
         />
